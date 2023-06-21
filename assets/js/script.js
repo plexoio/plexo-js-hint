@@ -5,7 +5,7 @@
 
 // API interaction STARTS
 
-const API_KEY = 'y4FP_wupzW0R8uOFkBa6FtaF2mAs'; // set it up
+const API_KEY = 'y4FP_wupzW0R8uOFkBa6FtaF2mA'; // set it up
 const API_URL = 'https://ci-jshint.herokuapp.com/api'; // set it up
 const results_modal = new bootstrap.Modal(document.getElementById('resultsModal')); // bootstrap's method
 
@@ -26,7 +26,14 @@ async function getStatus(e) {
     if (response.ok) {
         displayModal(data);
     } else {
-        throw new Error(data.error);
+        // Display errors on Modal
+        displayPostError(data);
+
+        // print errors on console
+        let errorInfo = `${data.error}\nStatus: ${data.status_code}`;
+        errorInfo += `\nNumber: ${data.error_no}`;
+        let myErrors = new Error(`${errorInfo}`);
+        console.log(myErrors);
     }
 }
 
@@ -82,8 +89,10 @@ async function postForm(e) {
     if (initiatePost.ok) {
         displayData(returnedData);
     } else {
+        // Display errors on Modal
         displayPostError(returnedData);
 
+        // print errors on console
         let errorInfo = `${returnedData.error}\nStatus: ${returnedData.status_code}`;
         errorInfo += `\nNumber: ${returnedData.error_no}`;
         let myErrors = new Error(`${errorInfo}`);
