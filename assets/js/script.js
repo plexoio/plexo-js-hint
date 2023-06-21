@@ -126,12 +126,11 @@ const displayData = (data) => {
     if (data.total_errors === 0) {
         results = `<div class="no_errors">All clean!</div>`;
     } else {
-        results = `<div>Errors Found: <span class="error_counts">${data.total_errors}</span></div>`;
-
+        results = `<div>Errors Found: <span class="error_counts">${data.total_errors}</span></div><hr>`;
         for (let error of data.error_list) {
             results += `<div> At line: <span class="line">${error.line}</span>, `
             results += `column: <span>${error.col}</span></div>`;
-            results += `<div>Error message: <span class="error-message">${error.error}</span></div>`;
+            results += `<div>Error message: <span class="error-message">${error.error}</span></div><hr>`;
         }
     }
 
@@ -140,8 +139,6 @@ const displayData = (data) => {
 
     results_modal.show();
 }
-
-
 
 
 // The same but with jQuery
