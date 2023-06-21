@@ -12,7 +12,7 @@ const results_modal = new bootstrap.Modal(document.getElementById('resultsModal'
 document.getElementById('status').addEventListener('click', e => getStatus(e)); // interacting with the DOM
 document.getElementById('submit').addEventListener('click', e => postForm(e)); // interacting with the DOM
 
-// GET data
+// GET data & process it
 
 /**
  * FIRST: Function to make the request to the API
@@ -21,7 +21,7 @@ document.getElementById('submit').addEventListener('click', e => postForm(e)); /
 async function getStatus(e) {
     const queryString = `${API_URL}?api_key=${API_KEY}`; // URL & validation
     const response = await fetch(queryString); // GET data
-    const data = await response.json(); // parse data to a JS object
+    const data = await response.json(); // parse JSON data to a JS object
 
     if (response.ok) {
         displayModal(data);
@@ -31,9 +31,9 @@ async function getStatus(e) {
 }
 
 /**
- * SECOND: Function to display the data from the API manipulating the DOM
+ * SECOND: (GET) Function to display the data from the API manipulating the DOM
  */
-let displayModal = (data) => {
+const displayModal = (data) => {
     let heading = 'API Key Status';
     let results = `<div>Your API key is valid until:</div>` // better as an HTML
     results += `<div class="key-status">${data.expiry}</div>` // += if too long, concatenate
@@ -44,10 +44,10 @@ let displayModal = (data) => {
     results_modal.show();
 }
 
-// POST data
+// POST data & process it
 
 /**
- * FIRST: POST function, sending data to the API to process for us
+ * FIRST: POST function, sending/receiving data to/from the API
  */
 
 async function postForm(e) {
@@ -60,15 +60,39 @@ async function postForm(e) {
         },
         body: form // body of the request
     });
+    const returnedData = await initiatePost.json(); // parse JSON data to a JS object
+
+    if(initiatePost.ok){
+        displayData(returnedData);
+    }else {
+        throw new Error(returnedData.error);
+    }
 }
 
 
-// DISPLAY returned data
+/**
+ * SECOND: (POST): Function to display the data from the API manipulating the DOM
+ */
 
+const displayData = (data) => {
+    let heading = `JSHint Results on: ${data.file}`;
+    if(data.total_errors === 0){
+        results = `<div class="no_errors">All clean!</div>`;
+    }else {
+        results = `<div>Errors Found: <span class="error_counts">${data.total_errors}</span></div>`;
 
+        for (let error of data.error_list){
+            results += `<div> At line: <span class="line">${error.line}</span>, `
+            results += `column: <span>${error.col}</span></div>`;
+            results += `<div>Error message: <span class="error-message">${error.error}</span></div>`;
+        }
+    }
+    
+    document.getElementById('resultsModalTitle').innerText = heading;
+    document.getElementById('results-content').innerHTML = results; // innerHTML
 
-
-
+    results_modal.show();
+}
 
 
 
